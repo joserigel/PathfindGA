@@ -1,9 +1,14 @@
 #include <iostream>
-#include <SDL3/SDL.h>
-
+#include "display.hpp"
 using namespace std;
 
 int main() {
-  cout << "hello world" << endl;
-  return 0;
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
+        return -1;
+    }
+
+    Display display;
+    display.start();
+    SDL_Quit();
+    return 0;
 }
