@@ -93,7 +93,7 @@ Display::Display() {
     
     done = false;
 
-    if (!window || !renderer || !backgroundTexture) {
+    if (!window || !renderer || !backgroundTexture || !circleTexture) {
         throw std::runtime_error("Cannot initialize SDL graphics");
     }
 
