@@ -1,5 +1,5 @@
-#include <iostream>
 #include "display.hpp"
+#include <SDL3/SDL_init.h>
 using namespace std;
 
 int main() {
