@@ -1,20 +1,18 @@
 #include "display.hpp"
 
 #include <SDL3/SDL_render.h>
+#include <SDL3/SDL_timer.h>
+#include <SDL3/SDL_keycode.h>
+
 #include <ctime>
 #include <stdexcept>
 
-#include <SDL3/SDL_timer.h>
 
 Display::~Display() {
     SDL_DestroyTexture(backgroundTexture);
     SDL_DestroyTexture(circleTexture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-
-    if (displayThread) {
-        delete displayThread;
-    }
 }
 
 Display::Display() {
@@ -28,6 +26,8 @@ Display::Display() {
     renderer = SDL_CreateRenderer(
             window, NULL
         );
+
+    // Background Texture
     backgroundTexture = SDL_CreateTexture(
             renderer, 
             SDL_PixelFormat::SDL_PIXELFORMAT_ABGR8888, 
@@ -44,7 +44,7 @@ Display::Display() {
         for (int j = 0; j < width; j++) {
             size_t coords = (i * width * 4) + j * 4;
             uint8_t color = (i + j) % 2 == 0 ? 255 : 0;
-            backgroundBMP[coords + 0] = color; 
+            backgroundBMP[coords + 0] = color;
             backgroundBMP[coords + 1] = color;
             backgroundBMP[coords + 2] = color;
             backgroundBMP[coords + 3] = 255;
@@ -99,18 +99,37 @@ Display::Display() {
 
 }
 
-void Display::loop() {
-    
+void Display::update(Board board) {
+    vector<vector<bool>> boardVector = board.data();
+    uint8_t* backgroundBMP = new uint8_t[width * height * 4];
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            uint8_t color = boardVector[j][i] ? 255 : 0;
+            size_t coords = (i * width * 4) + j * 4;
+            backgroundBMP[coords + 0] = color;
+            backgroundBMP[coords + 1] = color;
+            backgroundBMP[coords + 2] = color;
+            backgroundBMP[coords + 3] = 255;
+        }
+    }
+    circleRect.x = 0;
+    circleRect.y = (int)(height / 2) * windowScale;
+    SDL_UpdateTexture(backgroundTexture,
+            NULL, backgroundBMP, width * 4);
+    delete[] backgroundBMP;
 }
 
 void Display::start() {
-    displayThread = new std::thread(&Display::loop, this); 
 
     while(!done) {
         SDL_Event e;
         if (SDL_PollEvent(&e)) {
             if (e.type == SDL_EventType::SDL_EVENT_QUIT) {
                 done = true; 
+            }
+
+            if (e.type == SDL_EventType::SDL_EVENT_KEY_UP && e.key.key == SDLK_ESCAPE) {
+                done = true;
             }
         }
         
@@ -121,5 +140,4 @@ void Display::start() {
         SDL_RenderPresent(renderer);
         SDL_Delay(1);
     }
-    displayThread->join();
 }

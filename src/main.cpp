@@ -3,6 +3,7 @@
 
 #include "display.hpp"
 #include "neuralnet.hpp"
+#include "board.hpp"
 
 using namespace std;
 
@@ -12,13 +13,11 @@ int main() {
     }
     
     Display display;
-    NeuralNet neuralNet(display.width, display.height);
-    Eigen::VectorXd input(display.width * display.height);
-    Eigen::VectorXd output = neuralNet.feed(input);
-
-    cout << output << endl;
-
+    Board board(display.width, display.height);
+    board.generate(0.20);
+    display.update(board);
     display.start();
+
     SDL_Quit();
 
     return 0;

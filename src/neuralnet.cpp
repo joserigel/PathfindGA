@@ -1,6 +1,7 @@
 #include "neuralnet.hpp"
 
 #include <random>
+#include <chrono>
 
 Eigen::VectorXd NeuralNet::ReLU(Eigen::VectorXd& input) {
     Eigen::VectorXd output = input;
@@ -32,6 +33,7 @@ NeuralNet::NeuralNet(size_t boardWidth, size_t boardHeight) {
     double upperBound = 1.0;
     std::uniform_real_distribution<double> unif(lowerBound, upperBound);
     std::default_random_engine re;
+    re.seed(std::chrono::system_clock::now().time_since_epoch().count());
     for (int i = 0; i < layersCount; i++) {
         for (int row = 0; row < layers[i].rows(); row++) {
             for (int col = 0; col < layers[i].cols(); col++) {
