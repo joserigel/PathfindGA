@@ -1,7 +1,6 @@
 #ifndef __DISPLAY_HPP__
 #define __DISPLAY_HPP__
 
-#include <cstdint>
 #include <thread>
 
 
@@ -10,10 +9,7 @@
 
 class Display {
   private:
-    static constexpr int width = 30;
-    static constexpr int height = 15;
-    static constexpr int windowScale = 32;
-    const char* title = "PathfindRL";
+   const char* title = "PathfindRL";
     SDL_Window* window;
     SDL_Renderer* renderer;
 
@@ -27,6 +23,10 @@ class Display {
     bool done; 
     void loop();
   public:
+    static constexpr size_t width = 15;
+    static constexpr size_t height = 8;
+    static constexpr size_t windowScale = 32;
+ 
     Display();
     ~Display();
 

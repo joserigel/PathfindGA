@@ -5,6 +5,7 @@ project(PathfindRL VERSION 1.0)
 set(PathfindRL VERSION 1.0)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_BUILD_TYPE Debug)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -17,10 +18,19 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL3)
 
-file(GLOB_RECURSE PATHFIND_RL_SOURCES "src/*.hpp" "src/*.cpp")
+FetchContent_Declare(
+    Eigen3
+    GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+    GIT_TAG 3.4.1
+    GIT_SHALLOW ON
+    EXCLUDE_FROM_ALL
+    SYSTEM
+)
+FetchContent_MakeAvailable(Eigen3)
 
-set(GCC_COVERAGE_LINK_FLAGS "-g")
+file(GLOB_RECURSE PATHFIND_RL_SOURCES "src/*.hpp" "src/*.cpp")
 
 add_executable(PathfindRL ${PATHFIND_RL_SOURCES})
 
 target_link_libraries(PathfindRL PRIVATE SDL3::SDL3)
+target_link_libraries(PathfindRL PRIVATE Eigen3::Eigen)
