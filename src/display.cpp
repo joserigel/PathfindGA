@@ -4,8 +4,8 @@
 #include <SDL3/SDL_timer.h>
 #include <SDL3/SDL_keycode.h>
 
-#include <ctime>
 #include <stdexcept>
+#include <ctime>
 
 
 Display::~Display() {
@@ -15,8 +15,8 @@ Display::~Display() {
     SDL_DestroyWindow(window);
 }
 
-Display::Display() {
-    srand(time(NULL));
+Display::Display(size_t width, size_t height, size_t circles)
+    : width(width), height(height), circles(circles) {
 
     window = SDL_CreateWindow(
             title, 
@@ -73,8 +73,8 @@ Display::Display() {
             int y = i - r;
             if (x * x + y * y < r * r) {
                 circleBMP[coords + 0] = 255;
-                circleBMP[coords + 1] = 0;
-                circleBMP[coords + 2] = 0;
+                circleBMP[coords + 1] = 255;
+                circleBMP[coords + 2] = 255;
                 circleBMP[coords + 3] = 255;
             } else {
                 circleBMP[coords + 3] = 0;
@@ -82,10 +82,12 @@ Display::Display() {
         }
     }
 
-    circleRect.h = windowScale;
-    circleRect.w = windowScale;
-    circleRect.x = 0;
-    circleRect.y = 0;
+    for (auto& circle : this->circles) {
+        circle.h = windowScale;
+        circle.w = windowScale;
+        circle.x = 0;
+        circle.y = (int)(height / 2) * windowScale;
+    }
 
     SDL_UpdateTexture(circleTexture, NULL, circleBMP, windowScale * 4);
 
@@ -100,7 +102,7 @@ Display::Display() {
 }
 
 void Display::update(Board board) {
-    vector<vector<bool>> boardVector = board.data();
+    vector<vector<bool>> boardVector = board.obstacles();
     uint8_t* backgroundBMP = new uint8_t[width * height * 4];
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
@@ -112,8 +114,6 @@ void Display::update(Board board) {
             backgroundBMP[coords + 3] = 255;
         }
     }
-    circleRect.x = 0;
-    circleRect.y = (int)(height / 2) * windowScale;
     SDL_UpdateTexture(backgroundTexture,
             NULL, backgroundBMP, width * 4);
     delete[] backgroundBMP;
@@ -135,8 +135,14 @@ void Display::start() {
         
         SDL_RenderTexture(renderer, 
                 backgroundTexture, NULL, &backgroundRect);
-        SDL_RenderTexture(renderer, 
-                circleTexture, NULL, &circleRect);
+        srand(0);
+        for (auto& circle : circles) {
+            SDL_SetTextureColorMod(circleTexture,
+                    rand() % 256, rand() % 256, rand() % 256);
+            SDL_RenderTexture(renderer,
+                circleTexture, NULL, &circle);
+        }
+
         SDL_RenderPresent(renderer);
         SDL_Delay(1);
     }

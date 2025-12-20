@@ -11,10 +11,12 @@ int main() {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
         return -1;
     }
-    
-    Display display;
-    Board board(display.width, display.height);
-    board.generate(0.20);
+    size_t width = 15;
+    size_t height = 7;
+    size_t circles = 10;
+    Display display(width, height, circles);
+    Board board(width, height, circles);
+    board.generate(0.30);
     display.update(board);
     display.start();
 

@@ -5,30 +5,32 @@
 
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
+#include <vector>
 
 class Display {
-  private:
-   const char* title = "PathfindRL";
-    SDL_Window* window;
-    SDL_Renderer* renderer;
+    private:
+        static constexpr size_t windowScale = 32;
 
-    SDL_Texture* backgroundTexture;
-    SDL_FRect backgroundRect;
+        size_t width;
+        size_t height;
 
-    SDL_Texture* circleTexture;
-    SDL_FRect circleRect;
+        const char* title = "PathfindRL";
+        SDL_Window* window;
+        SDL_Renderer* renderer;
 
-    bool done; 
-  public:
-    static constexpr size_t  width = 15;
-    static constexpr size_t height = 7;
-    static constexpr size_t windowScale = 32;
- 
-    Display();
-    ~Display();
+        SDL_Texture* backgroundTexture;
+        SDL_FRect backgroundRect;
 
-    void start();
-    void update(Board board);
+        SDL_Texture* circleTexture;
+        std::vector<SDL_FRect> circles;
+
+        bool done;
+    public:
+        Display(size_t width, size_t height, size_t circles);
+        ~Display();
+
+        void start();
+        void update(Board board);
 };
 
 #endif /* __DRAW_HPP__ */

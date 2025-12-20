@@ -9,19 +9,24 @@ using namespace std;
 
 class Board {
     private:
+        struct Coord {
+            size_t x;
+            size_t y;
+        };
+
         size_t width;
         size_t height;
 
-        size_t x;
-        size_t y;
+        vector<Coord> circles;
+        vector<vector<bool>> grid;
 
-        vector<vector<bool>> board;
+        bool randomize(double probability);
     public:
-        Board(size_t width, size_t height);
+        Board(size_t width, size_t height, size_t circles);
 
         void generate(double probability);
         Eigen::VectorXd toVector();
-        vector<vector<bool>> data();
+        vector<vector<bool>> obstacles();
 };
 
 #endif /* __BOARD_HPP__ */
