@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(CMAKE_CXX_STANDARD 17)
-project(PathfindRL VERSION 1.0)
-set(PathfindRL VERSION 1.0)
+project(PathfindGA VERSION 1.0)
+set(PathfindGA VERSION 1.0)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_BUILD_TYPE Debug)
@@ -28,9 +28,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Eigen3)
 
-file(GLOB_RECURSE PATHFIND_RL_SOURCES "src/*.hpp" "src/*.cpp")
+file(GLOB_RECURSE PATHFIND_GA_SOURCES "src/*.hpp" "src/*.cpp")
 
-add_executable(PathfindRL ${PATHFIND_RL_SOURCES})
+add_executable(PathfindGA ${PATHFIND_GA_SOURCES})
 
-target_link_libraries(PathfindRL PRIVATE SDL3::SDL3)
-target_link_libraries(PathfindRL PRIVATE Eigen3::Eigen)
+target_link_libraries(PathfindGA PRIVATE SDL3::SDL3)
+target_link_libraries(PathfindGA PRIVATE Eigen3::Eigen)

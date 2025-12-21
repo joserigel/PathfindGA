@@ -16,7 +16,7 @@ class Training {
         vector<double> scores;
         vector<NeuralNet> nets;
 
-        void train(size_t instance, Board* board);
+        void train(size_t instance, Board& board);
     public:
         Training(size_t width, size_t height, size_t instances);
 

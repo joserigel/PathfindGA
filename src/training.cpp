@@ -11,8 +11,8 @@ Training::Training(size_t width, size_t height, size_t instances
    }
 }
 
-void Training::train(size_t instance, Board* board) {
-    Eigen::VectorXd input = board->toVector(instance);
+void Training::train(size_t instance, Board& board) {
+    Eigen::VectorXd input = board.toVector(instance);
     Eigen::VectorXd output = nets[instance].feed(input);
 
     int direction = 0;
@@ -27,7 +27,7 @@ void Training::train(size_t instance, Board* board) {
         confidence = output(1);
     }
 
-    bool valid = board->moveCircle(instance, direction);
+    bool valid = board.moveCircle(instance, direction);
     
     /**
      * Currently the scoring is very simple
@@ -43,8 +43,7 @@ void Training::tick(Board& board) {
     trainingThreads.clear();
     trainingThreads.reserve(instances);
     for (int i = 0; i < instances; i++) {
-        trainingThreads.emplace_back(
-                std::thread(&Training::train, this, i, &board));
+        trainingThreads.emplace_back(&Training::train, this, i, std::ref(board));
     }
 
     for (int i = 0; i < instances; i++) {
