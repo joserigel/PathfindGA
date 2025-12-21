@@ -6,6 +6,7 @@
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
 #include <vector>
+#include <mutex>
 
 class Display {
     private:
@@ -24,13 +25,15 @@ class Display {
         SDL_Texture* circleTexture;
         std::vector<SDL_FRect> circles;
 
-        bool done;
+        bool _done;
+        mutex mtx;
     public:
         Display(size_t width, size_t height, size_t circles);
         ~Display();
+        bool done();
 
-        void start();
-        void update(Board board);
+        void start(Board& board);
+        void update(Board& board);
 };
 
 #endif /* __DRAW_HPP__ */

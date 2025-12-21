@@ -7,7 +7,9 @@
 #include <stdexcept>
 #include <ctime>
 
-
+bool Display::done() {
+    return _done;
+}
 Display::~Display() {
     SDL_DestroyTexture(backgroundTexture);
     SDL_DestroyTexture(circleTexture);
@@ -40,16 +42,6 @@ Display::Display(size_t width, size_t height, size_t circles)
     backgroundRect.y = 0;
 
     uint8_t* backgroundBMP = new uint8_t[width * height * 4];
-    for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++) {
-            size_t coords = (i * width * 4) + j * 4;
-            uint8_t color = (i + j) % 2 == 0 ? 255 : 0;
-            backgroundBMP[coords + 0] = color;
-            backgroundBMP[coords + 1] = color;
-            backgroundBMP[coords + 2] = color;
-            backgroundBMP[coords + 3] = 255;
-        }
-    }
     SDL_UpdateTexture(backgroundTexture, 
             NULL, backgroundBMP, width * 4);
     delete[] backgroundBMP;
@@ -93,7 +85,7 @@ Display::Display(size_t width, size_t height, size_t circles)
 
     delete[] circleBMP;
     
-    done = false;
+    _done = false;
 
     if (!window || !renderer || !backgroundTexture || !circleTexture) {
         throw std::runtime_error("Cannot initialize SDL graphics");
@@ -101,7 +93,19 @@ Display::Display(size_t width, size_t height, size_t circles)
 
 }
 
-void Display::update(Board board) {
+void Display::update(Board& board) {
+    mtx.lock();
+
+    std::vector<Coord> circleCoords = board.circles();
+    for (int i = 0; i < circles.size(); i++) {
+        circles[i].x = circleCoords[i].x * windowScale;
+        circles[i].y = circleCoords[i].y * windowScale;
+    }
+
+    mtx.unlock();
+}
+
+void Display::start(Board& board) {
     vector<vector<bool>> boardVector = board.obstacles();
     uint8_t* backgroundBMP = new uint8_t[width * height * 4];
     for (int i = 0; i < height; i++) {
@@ -117,22 +121,22 @@ void Display::update(Board board) {
     SDL_UpdateTexture(backgroundTexture,
             NULL, backgroundBMP, width * 4);
     delete[] backgroundBMP;
-}
 
-void Display::start() {
-
-    while(!done) {
+    while(!_done) {
         SDL_Event e;
         if (SDL_PollEvent(&e)) {
             if (e.type == SDL_EventType::SDL_EVENT_QUIT) {
-                done = true; 
+                _done = true; 
             }
 
             if (e.type == SDL_EventType::SDL_EVENT_KEY_UP && e.key.key == SDLK_ESCAPE) {
-                done = true;
+                _done = true;
             }
         }
-        
+
+        mtx.lock();
+
+        SDL_RenderClear(renderer);
         SDL_RenderTexture(renderer, 
                 backgroundTexture, NULL, &backgroundRect);
         srand(0);
@@ -144,6 +148,8 @@ void Display::start() {
         }
 
         SDL_RenderPresent(renderer);
+
+        mtx.unlock();
         SDL_Delay(1);
     }
 }

@@ -12,11 +12,20 @@ Eigen::VectorXd NeuralNet::ReLU(Eigen::VectorXd& input) {
     return output;
 }
 
-NeuralNet::NeuralNet(NeuralNet& other) {
+NeuralNet::NeuralNet(const NeuralNet& other) noexcept {
    layers = std::vector<Eigen::MatrixXd>(other.layers.size());
    for (int i = 0; i < other.layers.size(); i++) {
         layers[i] = other.layers[i];
    }
+}
+
+NeuralNet::NeuralNet(NeuralNet&& other) noexcept :
+    layers(other.layers) {
+}
+
+NeuralNet& NeuralNet::operator=(NeuralNet& other) {
+    this->layers = other.layers;
+    return *this;
 }
 
 NeuralNet::NeuralNet(size_t boardWidth, size_t boardHeight) {
@@ -33,11 +42,27 @@ NeuralNet::NeuralNet(size_t boardWidth, size_t boardHeight) {
     double upperBound = 1.0;
     std::uniform_real_distribution<double> unif(lowerBound, upperBound);
     std::default_random_engine re;
-    re.seed(std::chrono::system_clock::now().time_since_epoch().count());
+    re.seed(std::chrono::system_clock::now()
+            .time_since_epoch().count());
     for (int i = 0; i < layersCount; i++) {
         for (int row = 0; row < layers[i].rows(); row++) {
             for (int col = 0; col < layers[i].cols(); col++) {
                 layers[i](row, col) = unif(re);
+            }
+        }
+    }
+}
+
+void NeuralNet::mutate(double rate) {
+    std::uniform_real_distribution<double> unif(-rate, rate);
+    std::default_random_engine re;
+    re.seed(std::chrono::system_clock::now().
+            time_since_epoch().count());
+
+    for (int i = 0; i < layers.size(); i++) {
+        for (int row = 0; row < layers[i].rows(); row++) {
+            for (int col = 0; col < layers[i].cols(); col++) {
+                layers[i](row, col) += unif(re);
             }
         }
     }

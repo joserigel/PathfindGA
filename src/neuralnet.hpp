@@ -11,10 +11,12 @@ class NeuralNet {
 
     public:
         NeuralNet(size_t boardWidth, size_t boardHeight);
-        NeuralNet(NeuralNet& other);
+        NeuralNet(const NeuralNet& other) noexcept;
+        NeuralNet(NeuralNet&& other) noexcept;
+        NeuralNet& operator=(NeuralNet& other);
         
         Eigen::VectorXd feed(Eigen::VectorXd input);
-        void mutate(double diff); 
+        void mutate(double rate); 
 };
 
 #endif /*  __NEURAL_NET_HPP__ */
