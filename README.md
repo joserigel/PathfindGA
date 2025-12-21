@@ -1,1 +1,1 @@
-# Pathfinding Reinforcement Learning
+# Pathfinding Genetic Algorithm 
