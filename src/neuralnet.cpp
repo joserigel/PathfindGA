@@ -28,9 +28,12 @@ NeuralNet& NeuralNet::operator=(NeuralNet& other) {
     return *this;
 }
 
-NeuralNet::NeuralNet(size_t boardWidth, size_t boardHeight) {
+NeuralNet::NeuralNet(size_t peripheral, size_t horizon) {
+    _peripheral = peripheral;
+    _horizon = horizon;
     const int layersCount = 4;
-    const int inputSize = boardWidth * boardHeight;
+    const int inputSize = peripheral * horizon;
+
     layers.reserve(layersCount);
 
     layers.push_back(Eigen::MatrixXd(128, inputSize));

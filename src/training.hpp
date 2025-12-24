@@ -12,13 +12,15 @@ using namespace std;
 class Training {
     private:
         size_t instances;
+        size_t _peripheral;
+        size_t _horizon;
         vector<thread> trainingThreads;
         vector<double> scores;
         vector<NeuralNet> nets;
 
         void train(size_t instance, Board& board);
     public:
-        Training(size_t width, size_t height, size_t instances);
+        Training(size_t width, size_t height, size_t peripheral, size_t horizon, size_t instances);
 
         void tick(Board& board);
         void pickAndMutate(double rate);

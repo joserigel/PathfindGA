@@ -25,7 +25,11 @@ class Board {
         Board(size_t width, size_t height, size_t circles);
 
         void generate(double probability);
-        Eigen::VectorXd toVector(size_t circle);
+        Eigen::VectorXd toVector(
+                size_t circle,
+                size_t peripheral,
+                size_t horizon
+                );
         vector<vector<bool>> obstacles();
         vector<Coord> circles();
         bool moveCircle(size_t circle, int direction);

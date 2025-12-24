@@ -29,9 +29,12 @@ int main() {
     size_t width = 15;
     size_t height = 7;
     size_t instances = 100;
+    size_t peripheral = 3;
+    size_t horizon = 6;
+
     Display display(width, height, instances);
     Board board(width, height, instances);
-    Training training(width, height, instances);
+    Training training(width, height, peripheral, horizon, instances);
     board.generate(0.30);
     std::thread t(&trainingThread, std::ref(training), std::ref(board), std::ref(display));
     display.start(board);

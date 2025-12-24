@@ -3,16 +3,16 @@
 #include <Eigen/Dense>
 #include <iostream>
 
-Training::Training(size_t width, size_t height, size_t instances
-        ) : instances(instances), scores(instances) {
+Training::Training(size_t width, size_t height, size_t peripheral, size_t horizon, size_t instances
+        ) : instances(instances), scores(instances), _peripheral(peripheral), _horizon(horizon) { 
    nets.reserve(instances); 
    for (int i = 0; i < instances; i++) {
-       nets.emplace_back(width, height);
+       nets.emplace_back(peripheral, horizon);
    }
 }
 
 void Training::train(size_t instance, Board& board) {
-    Eigen::VectorXd input = board.toVector(instance);
+    Eigen::VectorXd input = board.toVector(instance, _peripheral, _horizon);
     Eigen::VectorXd output = nets[instance].feed(input);
 
     int direction = 0;
@@ -26,7 +26,17 @@ void Training::train(size_t instance, Board& board) {
         direction = 1;
         confidence = output(1);
     }
-
+    switch(direction) {
+        case -1:
+            cout << "L";
+            break;
+        case 0:
+            cout << "F";
+            break;
+        case 1:
+            cout << "R";
+            break;
+    }
     bool valid = board.moveCircle(instance, direction);
     
     /**
@@ -66,6 +76,7 @@ void Training::pickAndMutate(double rate) {
             bestIdx = i;
         }
     }
+    cout << "bestNet: "<< bestIdx << ", score: " << maxScore << endl;
     NeuralNet bestNet = nets[bestIdx];
     for (int i = 0; i < nets.size(); i++) {
         nets[i] = bestNet; 

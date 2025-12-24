@@ -6,11 +6,13 @@
 
 class NeuralNet {
     private:
+        size_t _peripheral;
+        size_t _horizon;
         std::vector<Eigen::MatrixXd> layers;
         Eigen::VectorXd ReLU(Eigen::VectorXd& input);
 
     public:
-        NeuralNet(size_t boardWidth, size_t boardHeight);
+        NeuralNet(size_t peripheral, size_t horizon);
         NeuralNet(const NeuralNet& other) noexcept;
         NeuralNet(NeuralNet&& other) noexcept;
         NeuralNet& operator=(NeuralNet& other);

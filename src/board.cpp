@@ -21,21 +21,21 @@ size_t Board::height() {
     return _height;
 }
 
-Eigen::VectorXd Board::toVector(size_t circle) {
-    Eigen::VectorXd vector(_width * _height);
-
-    for (int i = 0; i < _width; i++) {
-        for (int j = 0; j < _height; j++) {
-            size_t coords = (i * _height) + j;
-            vector(coords) = _obstacles[i][j] ? 1 : 0;
+Eigen::VectorXd Board::toVector(size_t circle, size_t peripheral, size_t horizon) {
+    Eigen::VectorXd vector(peripheral * horizon);
+    
+    Coord coord = _circles[circle];
+    int startX = coord.x + 1;
+    int  startY = coord.y - (peripheral / 2);
+    for (size_t i = 0; i < peripheral; i++) {
+        for (size_t j = 0; j < horizon; j++) {
+            int x = startX + j;
+            int y = startY + i;
+            double obstacle = x >= 0 && x < _width && 
+                y >= 0 && y < _height && _obstacles[x][y] ? 1.0 : 0.0;
+            vector((i * horizon) + j) = obstacle;
         }
     }
-
-    size_t circleX = _circles[circle].x;
-    size_t circleY = _circles[circle].y;
-
-    size_t coordCircle = (circleX * _height) + circleY;
-    vector(coordCircle) = 2;
     return vector;
 }
 
